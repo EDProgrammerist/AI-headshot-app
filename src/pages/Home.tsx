@@ -44,12 +44,11 @@ export default function Home() {
 
       {headshot.hasUpload && (
         <TransformationGrid
-  title="AI Headshot Styles"
-  presets={headshot.presetImages}
-  selectedPresetId={headshot.selectedPresetId}
-  onSelect={headshot.selectPreset}
-  readyUrls={headshot.readyUrls}
-/>
+          title="AI Headshot Styles"
+          presets={headshot.presetImages}
+          selectedPresetId={headshot.selectedPresetId}
+          onSelect={headshot.selectPreset}
+        />
       )}
 
       {headshot.hasUpload && (

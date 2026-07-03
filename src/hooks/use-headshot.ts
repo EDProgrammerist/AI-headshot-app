@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { UploadStatus } from "../types";
 import type { CloudinaryUploadResult } from "../cloudinary/UploadWidget";
 import {
@@ -6,7 +6,6 @@ import {
   buildOriginalPreview,
   getPresetById,
 } from "../lib/transformations";
-import { warmAllTransformations } from "../lib/warmup";
 import type { CloudinaryImage } from "@cloudinary/url-gen/index";
 
 export function useHeadshot() {
@@ -14,7 +13,6 @@ export function useHeadshot() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [publicId, setPublicId] = useState<string | null>(null);
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
-  const [readyUrls, setReadyUrls] = useState<Set<string>>(new Set());
 
   const handleUploadStart = () => {
     setUploadStatus("uploading");
@@ -29,7 +27,6 @@ export function useHeadshot() {
     }
     setPublicId(result.public_id);
     setSelectedPresetId(null);
-    setReadyUrls(new Set());
     setUploadStatus("success");
     setUploadError(null);
   };
@@ -51,15 +48,6 @@ export function useHeadshot() {
       image: preset.build(publicId),
     }));
   }, [publicId]);
-
-  useEffect(() => {
-    if (presetImages.length === 0) return;
-    const urls = presetImages.map(({ image }) => image.toURL());
-    warmAllTransformations(urls, (url, ready) => {
-      if (!ready) return;
-      setReadyUrls((prev) => new Set(prev).add(url));
-    });
-  }, [presetImages]);
 
   const selectedPreset = selectedPresetId
     ? (getPresetById(selectedPresetId) ?? null)
@@ -84,6 +72,5 @@ export function useHeadshot() {
     selectedImage,
     selectedPreset,
     publicId,
-    readyUrls,
   };
 }
